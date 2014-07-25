@@ -932,18 +932,18 @@ public class LibvirtStorageAdaptor implements StorageAdaptor {
                                 rbd.clone(template.getName(), rbdTemplateSnapName, io, disk.getName(), rbdFeatures, rbdOrder);
                                 s_logger.debug("Succesfully cloned " + template.getName() + "@" + rbdTemplateSnapName + " to " + disk.getName());
                                 /* We also need to resize the image if the VM was deployed with a larger root disk size */
-                                if (disk.getVirtualSize() > template.getVirtualSize()) {
-                                    RbdImage diskImage = rbd.open(disk.getName());
-                                    diskSize = disk.getVirtualSize();
-                                    int s = rbd.rbd_resize(diskImage.getPointer(), diskSize);
-                                    rbd.close(disk.getName());
-                                    if (s < 0) {
-                                       throw new RbdException("Failed to resize image", r);
-                                       s_logger.debug("Image resize failed due to librbd exception.");
-                                    } else {				
-                                       s_logger.debug("Resized " + disk.getName() + " to " + disk.getVirtualSize());
+                                    if (disk.getVirtualSize() > template.getVirtualSize()) {
+                                        RbdImage diskImage = rbd.open(disk.getName());
+                                        diskSize = disk.getVirtualSize();
+                                        int s = rbd.rbd_resize(diskImage.getPointer(), diskSize);
+                                        rbd.close(disk.getName());
+                                        if (s < 0) {
+                                           throw new RbdException("Failed to resize image", r);
+                                           s_logger.debug("Image resize failed due to librbd exception.");
+                                        } else {
+                                           s_logger.debug("Resized " + disk.getName() + " to " + disk.getVirtualSize());
+                                        }
                                     }
-                                }
                             }
 
                             rbd.close(srcImage);
