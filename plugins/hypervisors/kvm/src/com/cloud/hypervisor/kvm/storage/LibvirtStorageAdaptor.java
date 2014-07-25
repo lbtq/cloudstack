@@ -934,11 +934,10 @@ public class LibvirtStorageAdaptor implements StorageAdaptor {
                                 /* We also need to resize the image if the VM was deployed with a larger root disk size */
                                     if (disk.getVirtualSize() > template.getVirtualSize()) {
                                         RbdImage diskImage = rbd.open(disk.getName());
-                                        diskSize = disk.getVirtualSize();
+                                        long diskSize = disk.getVirtualSize();
                                         int s = rbd.rbd_resize(diskImage.getPointer(), diskSize);
-                                        rbd.close(disk.getName());
+                                        rbd.close(diskImage);
                                         if (s < 0) {
-                                           throw new RbdException("Failed to resize image", r);
                                            s_logger.debug("Image resize failed due to librbd exception.");
                                         } else {
                                            s_logger.debug("Resized " + disk.getName() + " to " + disk.getVirtualSize());
