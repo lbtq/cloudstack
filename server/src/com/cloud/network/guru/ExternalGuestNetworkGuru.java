@@ -293,7 +293,11 @@ public class ExternalGuestNetworkGuru extends GuestNetworkGuru {
             nic.setIsolationUri(config.getBroadcastUri());
             nic.setDns1(dc.getDns1());
             nic.setDns2(dc.getDns2());
-            nic.setNetmask(NetUtils.cidr2Netmask(config.getCidr()));
+            if (config.getNetworkCidr() != null) {
+                nic.setNetmask(NetUtils.cidr2Netmask(config.getNetworkCidr()));
+            } else {
+                nic.setNetmask(NetUtils.cidr2Netmask(config.getCidr()));
+            }    
             long cidrAddress = NetUtils.ip2Long(config.getCidr().split("/")[0]);
             int cidrSize = getGloballyConfiguredCidrSize();
             nic.setGateway(config.getGateway());
