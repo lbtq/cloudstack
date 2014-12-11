@@ -2340,14 +2340,48 @@
                         actions: {
                             enableVPN: {
                                 label: 'label.enable.vpn',
+                                messages: {
+                                    notification: function(args) {
+                                        return 'label.enable.vpn';
+                                    }
+                                },
+                                createForm: {
+                                    title: 'label.enable.vpn',
+                                    messages: {
+                                        notification: function(args) {
+                                            return 'label.enable.vpn';
+                                        }
+                                },
+                                fields: {
+                                    startip: {
+                                        label: 'label.start.IP',
+                                        validation: {
+                                            required: false
+                                        }
+                                    },
+                                    endip: {
+                                       label: 'label.end.IP',
+                                       validation: {
+                                           required: false
+                                       }
+                                    }
+                                  }
+                                },
                                 action: function(args) {
+                                    var dataObj = {
+                                        publicipid: args.context.ipAddresses[0].id,
+                                        domainid: args.context.ipAddresses[0].domainid,
+                                        account: args.context.ipAddresses[0].account
+                                    };
+                                    
+                                    if (args.data.startip != null && args.data.endip != null && args.data.startip.length > 0 && args.data.endip.length > 0) 
+                                        $.extend(dataObj, {
+                                            iprange: args.data.startip + '-' + args.data.endip
+                                        });
+
                                     $.ajax({
                                         url: createURL('createRemoteAccessVpn'),
-                                        data: {
-                                            publicipid: args.context.ipAddresses[0].id,
-                                            domainid: args.context.ipAddresses[0].domainid,
-                                            account: args.context.ipAddresses[0].account
-                                        },
+                                        data: dataObj,
                                         dataType: 'json',
                                         async: true,
                                         success: function(data) {
@@ -2370,17 +2404,6 @@
                                             args.response.error(parseXMLHttpResponse(data));
                                         }
                                     });
-                                },
-                                messages: {
-                                    confirm: function(args) {
-                                        return 'message.enable.vpn';
-                                    },
-                                    notification: function(args) {
-                                        return 'label.enable.vpn';
-                                    },
-                                    complete: function(args) {
-                                        return _l('message.enabled.vpn') + ' ' + args.vpn.publicip + '.' + '<br/>' + _l('message.enabled.vpn.ip.sec') + '<br/>' + args.vpn.presharedkey;
-                                    }
                                 },
                                 notification: {
                                     poll: pollAsyncJobResult
